@@ -10,8 +10,10 @@ public class GameController : PunBehaviour{
 
     [Header("Game Setup")]
     [SerializeField] GameModes _gameMode;
-    [SerializeField] Transform _offlinePlayer;
-    [SerializeField] Transform _onlinePlayer;
+    [SerializeField] Transform _offlinePlayerPrefab;
+    [SerializeField] Transform _onlinePlayerPrefab;
+    Transform _offlinePlayer;
+    Transform _onlinePlayer;
     
     [Header("Ball Setup")] 
     [SerializeField] Transform _ballPrefab;
@@ -28,13 +30,11 @@ public class GameController : PunBehaviour{
     Vector2 _horizontalBounds;
     
     public struct BoardBounds{
-        public readonly float Left, Right, Up, Bot;
+        public readonly float Left, Right;
 
-        public BoardBounds(float left, float right, float up, float bot){
+        public BoardBounds(float left, float right){
             Left = left;
             Right = right;
-            Up = up;
-            Bot = bot;
         }
     }
 
@@ -51,8 +51,19 @@ public class GameController : PunBehaviour{
     }
 
     void OnGameEnded() {
-        Destroy(_activeBall);
+        _gameMode = GameModes.Menu;
+        _activeBall.GetComponent<Ball>().BallDissapared -= OnBallDissapared;
+        Destroy(_activeBall.gameObject);
+        
+        if(_gameMode == GameModes.Offline)
+            Destroy(_offlinePlayer.gameObject);
+        else 
+            Destroy(_onlinePlayer.gameObject);
+
         _activeBall = null;
+        
+        if(PhotonNetwork.connected)
+            PhotonNetwork.Disconnect();
     }
 
     void OnSessionStarted() {
@@ -69,14 +80,14 @@ public class GameController : PunBehaviour{
     }
 
     void SetupOfflineGame(){
-        Instantiate(_offlinePlayer);
+        _offlinePlayer = Instantiate(_offlinePlayerPrefab);
         SetupBall();
     }
 
     void SetupOnlineGame() {
         if(!PhotonNetwork.isMasterClient)
             return;
-        PhotonNetwork.Instantiate(_onlinePlayer.name, _onlinePlayer.position, Quaternion.identity, 0);
+        _onlinePlayer = PhotonNetwork.Instantiate(_onlinePlayerPrefab.name, _onlinePlayerPrefab.position, Quaternion.identity, 0).transform;
         SetupBall();
     }
 
@@ -90,19 +101,23 @@ public class GameController : PunBehaviour{
             var leftBound = cam.ViewportToWorldPoint(new Vector3(0, 0, 0)).x;
             var rightBound = cam.ViewportToWorldPoint(new Vector3(1, 0, 0)).x;
         
-            HorizontalBounds = new BoardBounds(leftBound, rightBound, 3, -3);
+            HorizontalBounds = new BoardBounds(leftBound, rightBound);
 
             _leftCollider.DOMoveX(HorizontalBounds.Left, 0.25f);
             _rightCollider.DOMoveX(HorizontalBounds.Right, 0.25f);
         } else {
             _leftCollider.position = new Vector2(-_onlineBoardOffset, 0);
             _rightCollider.position = new Vector2(_onlineBoardOffset, 0);
+            HorizontalBounds = new BoardBounds(-_onlineBoardOffset, _onlineBoardOffset);
         }
 
     }
 
     [PunRPC]
     void SetupBall(){
+        
+        if(_gameMode == GameModes.Menu)
+            return;
         
         if (_activeBall == null) {
 

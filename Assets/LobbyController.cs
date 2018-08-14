@@ -7,7 +7,7 @@ using UnityEngine;
 public class LobbyController : PunBehaviour{
 
 	public static event Action<int> PlayerConnected;
-	public static event Action SessionStarted;
+	public static event Action SessionStarted, PlayerDisconnected;
 	
 	const string _gameVersion = "1";
 	public byte MaxPlayersPerRoom = 2;
@@ -62,11 +62,19 @@ public class LobbyController : PunBehaviour{
 	public override void OnPhotonPlayerConnected(PhotonPlayer newPlayer) {
 		PlayerConnected?.Invoke(PhotonNetwork.countOfPlayers);
 	} 
+	
+	public override void OnPhotonPlayerDisconnected(PhotonPlayer player) {
+		PlayerDisconnected?.Invoke();
+	} 
 
 	public override void OnJoinedRoom()
 	{
 		Debug.Log("Players in room: " + PhotonNetwork.room.PlayerCount);
 		StartCoroutine(WaitingForSecondPlayer());
+	}
+
+	public override void OnLeftRoom() {
+		
 	}
 
 	void StartSession() {

@@ -11,13 +11,8 @@ public class PlayerController : MonoBehaviour{
     void Awake(){
         _camera = Camera.main;
         _playerBates = transform;
-        UIController.GameEnded += OnGameEnded;
     }
-
-    void OnGameEnded() {
-        Destroy(gameObject);
-    }
-
+    
     void Start(){
         SetupPlayerInfo();
     }

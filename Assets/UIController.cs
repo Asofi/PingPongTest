@@ -15,6 +15,7 @@ public class UIController : MonoBehaviour {
 
     void Awake() {
         LobbyController.SessionStarted += OnSessionStarted;
+        LobbyController.PlayerDisconnected += EndGame;
     }
 
     void Init() {

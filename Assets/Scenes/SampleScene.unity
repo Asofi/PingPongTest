@@ -1308,9 +1308,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _gameMode: 0
-  _offlinePlayer: {fileID: 4839326597980166, guid: e55c0c4c1fc13654c835787c1ab2d6ac,
+  _offlinePlayerPrefab: {fileID: 4839326597980166, guid: e55c0c4c1fc13654c835787c1ab2d6ac,
     type: 2}
-  _onlinePlayer: {fileID: 4292670885376460, guid: 09f41366361a99846a8aab34c42dcc89,
+  _onlinePlayerPrefab: {fileID: 4292670885376460, guid: 09f41366361a99846a8aab34c42dcc89,
     type: 2}
   _ballPrefab: {fileID: 4693458609715078, guid: 8ac8d6e96e9ec784294dde6469164297,
     type: 2}
