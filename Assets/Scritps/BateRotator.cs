@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 
-public class Bate : MonoBehaviour {
+/// <summary>
+/// Rotates bate to position-dependent angle
+/// </summary>
+public class BateRotator : MonoBehaviour {
     [SerializeField] float _angleAmplitude = 15f;
     [SerializeField] bool _isUpperBate;
 
@@ -8,6 +11,9 @@ public class Bate : MonoBehaviour {
         RotateBate();
     }
 
+    /// <summary>
+    /// Small rotation prevents ball stacking between bates. Also it looks pretty :)
+    /// </summary>
     void RotateBate() {
         var halfScreenWidth = GameController.Instance.HorizontalBounds.Right;
         transform.localRotation =

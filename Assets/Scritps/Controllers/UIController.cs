@@ -2,6 +2,9 @@
 using DG.Tweening;
 using UnityEngine;
 
+/// <summary>
+/// Handles UI
+/// </summary>
 public class UIController : MonoBehaviour {
     public static event Action<GameModes> GameStarted;
     public static event Action GameEnded;
@@ -11,12 +14,18 @@ public class UIController : MonoBehaviour {
     void Awake() {
         LobbyController.SessionStarted += OnSessionStarted;
         LobbyController.PlayerDisconnected += EndGame;
+        LobbyController.RejectConnection += OnRejectConnection;
         Init();
     }
 
     void Init() {
         ShowMenu(_connectingScreen, false);
         ShowMenu(_ingameScreen, false);
+    }
+    
+    void OnRejectConnection() {
+        ShowMenu(_connectingScreen, false);
+        ShowMenu(_mainMenu, true, Ease.OutBack);
     }
 
     void OnSessionStarted() {

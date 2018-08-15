@@ -2,6 +2,9 @@
 using DG.Tweening;
 using Random = UnityEngine.Random;
 
+/// <summary>
+/// Handles online balll logic
+/// </summary>
 public class OnlineBall : Ball {
     void OnEnable() {
         if (PhotonNetwork.isMasterClient)
@@ -24,6 +27,10 @@ public class OnlineBall : Ball {
                            });
     }
 
+    /// <summary>
+    /// Transfering random seed for the same random on every client
+    /// </summary>
+    /// <param name="seed"></param>
     [PunRPC]
     void SetupBallPropertiesRPC(int seed) {
         Random.InitState(seed);

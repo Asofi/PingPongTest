@@ -1,37 +1,32 @@
 ﻿using System;
 using System.Collections;
 using Photon;
+using UnityEditor;
 using UnityEngine;
 
+/// <summary>
+/// Handles players connection
+/// </summary>
 public class LobbyController : PunBehaviour {
     public static event Action<int> PlayerConnected;
-    public static event Action SessionStarted, PlayerDisconnected;
+    public static event Action SessionStarted, PlayerDisconnected, RejectConnection;
 
-    [SerializeField] byte MaxPlayersPerRoom = 2;
-    const string _gameVersion = "1";
+    const float MaxConnectionTime = 30; 
+    const byte MaxPlayersPerRoom = 2;
+    const string GameVersion = "1";
+
+    float _connnectionTime;
+
+    #region Unity Messages
 
     void Awake() {
-        PhotonNetwork.autoJoinLobby = false;
-        PhotonNetwork.automaticallySyncScene = true;
-        PhotonNetwork.sendRate = 20;
-        PhotonNetwork.sendRateOnSerialize = 20;
+        SetupPhoton();
         UIController.GameStarted += OnGameStarted;
     }
 
-    void OnGameStarted(GameModes obj) {
-        if (obj != GameModes.Online)
-            return;
+    #endregion
 
-        Connect();
-    }
-
-    void Connect() {
-        if (PhotonNetwork.connected) {
-            PhotonNetwork.JoinRandomRoom();
-        } else {
-            PhotonNetwork.ConnectUsingSettings(_gameVersion);
-        }
-    }
+    #region Photon Messages
 
     public override void OnConnectedToMaster() {
         PhotonNetwork.JoinRandomRoom();
@@ -54,8 +49,39 @@ public class LobbyController : PunBehaviour {
     }
 
     public override void OnJoinedRoom() {
-        Debug.Log("Players in room: " + PhotonNetwork.room.PlayerCount);
         StartCoroutine(WaitingForSecondPlayer());
+    }
+
+    #endregion
+
+    #region Project Methods
+    
+    public void RejectConnectionManually(){
+        PhotonNetwork.Disconnect();
+        RejectConnection?.Invoke();
+        StopAllCoroutines();
+    }
+
+    void OnGameStarted(GameModes obj) {
+        if (obj != GameModes.Online)
+            return;
+
+        Connect();
+    }
+
+    void SetupPhoton(){
+        PhotonNetwork.autoJoinLobby = false;
+        PhotonNetwork.automaticallySyncScene = true;
+        PhotonNetwork.sendRate = 20;
+        PhotonNetwork.sendRateOnSerialize = 20;
+    }
+
+    void Connect() {
+        if (PhotonNetwork.connected) {
+            PhotonNetwork.JoinRandomRoom();
+        } else {
+            PhotonNetwork.ConnectUsingSettings(GameVersion);
+        }
     }
 
     void StartSession() {
@@ -64,12 +90,17 @@ public class LobbyController : PunBehaviour {
     }
 
     IEnumerator WaitingForSecondPlayer() {
+        _connnectionTime = 0;
         while (PhotonNetwork.room.PlayerCount < 2) {
-            print("Waitng for second player...");
+            _connnectionTime += Time.deltaTime;
+
+            if (_connnectionTime > MaxConnectionTime) {
+                RejectConnectionManually();
+            }
             yield return null;
         }
-
-        print("All connected");
         StartSession();
     }
+
+    #endregion
 }

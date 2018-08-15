@@ -1,6 +1,9 @@
 ﻿using DG.Tweening;
 using UnityEngine;
 
+/// <summary>
+/// Handles offline ball logic
+/// </summary>
 public class OfflineBall : Ball {
     void OnEnable() {
         LaunchBall();

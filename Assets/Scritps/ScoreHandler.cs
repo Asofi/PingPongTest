@@ -3,6 +3,9 @@ using Photon;
 using TMPro;
 using UnityEngine;
 
+/// <summary>
+/// Handles score 
+/// </summary>
 public class ScoreHandler : PunBehaviour {
     [SerializeField] TMP_Text _scoreText;
     StringBuilder _stringBuilder = new StringBuilder(32, 32);
@@ -12,11 +15,11 @@ public class ScoreHandler : PunBehaviour {
         get { return _score; }
         private set {
             _score = value;
-            _stringBuilder.Length = 0;
-            _stringBuilder.Append(value);
-            _scoreText.SetText(_stringBuilder);
+            SetScoreText(value);
         }
     }
+
+    #region Unity Messages
 
     void Awake() {
         Ball.BallBounced += OnBallBounced;
@@ -25,22 +28,18 @@ public class ScoreHandler : PunBehaviour {
         UIController.GameEnded += ResetScore;
     }
 
-    void Start() {
-        _scoreText.GetComponent<Renderer>().sortingOrder = -1;
-    }
+    #endregion
+    
+    #region Event Handlers
 
     void OnGameStarted(GameModes obj) {
         ResetScore();
     }
-
-    void ResetScore() {
-        Score = 0;
-    }
-
+    
     void OnBallBounced() {
         Score++;
     }
-
+    
     void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info) {
         if (stream.isWriting) {
             stream.SendNext(Score);
@@ -48,4 +47,21 @@ public class ScoreHandler : PunBehaviour {
             Score = (int) stream.ReceiveNext();
         }
     }
+
+    #endregion
+
+    #region Project Methods
+
+    void SetScoreText(int value){
+        _stringBuilder.Length = 0;
+        _stringBuilder.Append(value);
+        _scoreText.SetText(_stringBuilder);
+    }
+
+    void ResetScore() {
+        Score = 0;
+    }
+
+    #endregion
+
 }

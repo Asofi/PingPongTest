@@ -1,6 +1,11 @@
-﻿using Photon;
+﻿using System.Collections;
+using DG.Tweening;
+using Photon;
 using UnityEngine;
 
+/// <summary>
+/// Handles bate controlling over network
+/// </summary>
 public class BateNetworkController : PunBehaviour {
     [SerializeField] float _bateSpeed;
     float _networkLerpSpeed = 9;
@@ -8,29 +13,37 @@ public class BateNetworkController : PunBehaviour {
     float _sideLimit;
 
     Camera _camera;
+    SpriteRenderer _renderer;
 
     Vector2 _movingPosition;
     Quaternion _bateRotation;
 
     void Awake() {
         _camera = Camera.main;
+        _renderer = GetComponent<SpriteRenderer>();
         _movingPosition.y = transform.position.y;
     }
 
     void Start() {
         SetupPlayerInfo();
+        StartCoroutine(IndicatePlayer());
     }
 
     void Update() {
         MoveBates();
     }
 
+    /// <summary>
+    /// Allows us to change bate x scale to any
+    /// </summary>
     void SetupPlayerInfo() {
-        var renderer = transform.GetComponentInChildren<SpriteRenderer>();
-        _bateWidth = renderer.bounds.size.magnitude;
+        _bateWidth = _renderer.bounds.size.magnitude;
         _sideLimit = GameController.Instance.HorizontalBounds.Right - _bateWidth / 2;
     }
 
+    /// <summary>
+    /// We can use GetMouseButton because game needs only one touch
+    /// </summary>
     void GetInput() {
         if (Input.GetMouseButton(0)) {
             var mousePosition = _camera.ScreenToWorldPoint(Input.mousePosition);
@@ -48,6 +61,17 @@ public class BateNetworkController : PunBehaviour {
         }
 
         transform.position = Vector2.Lerp(transform.position, _movingPosition, _bateSpeed * Time.deltaTime);
+    }
+
+    /// <summary>
+    /// Waiting a second because wnership transfering takes some time
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator IndicatePlayer(){
+        yield return new WaitForSeconds(1);
+        if(!photonView.isMine)
+            yield break;
+        _renderer.DOColor(Color.white, 0.5f).SetLoops(6, LoopType.Yoyo);
     }
 
     void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info) {

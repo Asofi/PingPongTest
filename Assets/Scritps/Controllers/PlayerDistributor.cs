@@ -1,7 +1,10 @@
 ﻿using Photon;
 using UnityEngine;
 
-public class OnlineController : PunBehaviour {
+/// <summary>
+/// Distrubute bates between players
+/// </summary>
+public class PlayerDistributor : PunBehaviour {
     [SerializeField] PhotonView _lowerPlayer, _upperPlayer;
 
     void OnEnable() {

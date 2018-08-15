@@ -3,15 +3,20 @@ using Photon;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+/// <summary>
+/// Base class for all ball types
+/// </summary>
 public class Ball : PunBehaviour {
     public static event Action BallBounced, BallDissapeared;
+
+    const string PlayerTag = "Player";
 
     [SerializeField] protected BallSettings _ballSettings;
 
     protected Rigidbody2D _rb;
-    SpriteRenderer _renderer;
-
     protected float _ballSpeed;
+
+    SpriteRenderer _renderer;
     Color _ballColor;
     float _ballSize;
 
@@ -21,7 +26,7 @@ public class Ball : PunBehaviour {
     }
 
     void OnCollisionEnter2D(Collision2D other) {
-        if (other.collider.CompareTag("Player")) {
+        if (other.collider.CompareTag(PlayerTag)) {
             if (!PhotonNetwork.connected || PhotonNetwork.isMasterClient)
                 BallBounced?.Invoke();
         }

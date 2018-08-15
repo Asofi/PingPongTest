@@ -2,6 +2,9 @@
 using Photon;
 using UnityEngine;
 
+/// <summary>
+/// Handles base game logic
+/// </summary>
 public class GameController : PunBehaviour {
     public static GameController Instance;
 
@@ -38,26 +41,32 @@ public class GameController : PunBehaviour {
 
     public BoardBounds HorizontalBounds { get; private set; }
 
-    void Awake() {
-        if (Instance != null)
-            Destroy(Instance.gameObject);
+    #region Unity Messages
 
-        Instance = this;
+    void Awake(){
+        if (Instance != null)
+            Destroy(gameObject);
+        else
+            Instance = this;
 
         UIController.GameStarted += OnGameStarted;
         UIController.GameEnded += OnGameEnded;
         LobbyController.SessionStarted += OnSessionStarted;
     }
 
+    #endregion
+
+    #region Event Handlers
+
     void OnGameEnded() {
         Ball.BallDissapeared -= OnBallDissapared;
         Destroy(_activeBall.gameObject);
 
         if (_gameMode == GameModes.Offline) {
-            if (_offlinePlayer)
+            if (_offlinePlayer != null)
                 Destroy(_offlinePlayer.gameObject);
         } else {
-            if (_onlinePlayer)
+            if (_onlinePlayer != null)
                 Destroy(_onlinePlayer.gameObject);
         }
 
@@ -89,6 +98,10 @@ public class GameController : PunBehaviour {
         }
     }
 
+    #endregion
+
+    #region Project Methods
+
     void SetupOfflineGame() {
         _offlinePlayer = Instantiate(_offlinePlayerPrefab);
         SetupBall();
@@ -99,15 +112,15 @@ public class GameController : PunBehaviour {
             return;
 
         _onlinePlayer = PhotonNetwork
-                        .Instantiate(_onlinePlayerPrefab.name, _onlinePlayerPrefab.position, Quaternion.identity, 0)
-                        .transform;
+            .Instantiate(_onlinePlayerPrefab.name, _onlinePlayerPrefab.position, Quaternion.identity, 0)
+            .transform;
 
         SetupBall();
     }
 
     /// <summary>
-    /// Offline setup allow us to play on any wild screen
-    /// Online setup is placing borders at fixed positions 
+    /// The Offline setup allows us to play on any wild screen
+    /// The Online setup is placing borders at fixed positions 
     /// </summary>
     void SetupBorders() {
         if (_gameMode == GameModes.Offline) {
@@ -126,6 +139,13 @@ public class GameController : PunBehaviour {
         }
     }
 
+    #endregion
+
+    #region RPCs
+
+    /// <summary>
+    /// Spawns ball depends on GameMode and then respawn it after dissapearing
+    /// </summary>
     [PunRPC]
     void SetupBall() {
         if (_gameMode == GameModes.Menu)
@@ -137,7 +157,7 @@ public class GameController : PunBehaviour {
             else if (PhotonNetwork.isMasterClient) {
                 _activeBall =
                     PhotonNetwork.Instantiate(_onlineBallPrefab.name, _ballSpawnPoint.position, Quaternion.identity, 0)
-                                 .transform;
+                        .transform;
 
                 photonView.RPC("Init", PhotonTargets.Others, _activeBall.gameObject.GetPhotonView().viewID);
             }
@@ -149,8 +169,16 @@ public class GameController : PunBehaviour {
         }
     }
 
+    /// <summary>
+    /// Sends _activeBall id to other players
+    /// </summary>
+    /// <param name="activeBallViewId">_activeBall's id</param>
     [PunRPC]
     void Init(int activeBallViewId) {
         _activeBall = PhotonView.Find(activeBallViewId).transform;
     }
+
+    #endregion
+
+
 }
