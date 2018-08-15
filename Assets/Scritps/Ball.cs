@@ -1,48 +1,46 @@
 ﻿using System;
 using Photon;
 using UnityEngine;
-
 using Random = UnityEngine.Random;
 
 public class Ball : PunBehaviour {
+    public static event Action BallBounced, BallDissapeared;
 
-	public static event Action BallBounced, BallDissapeared;
+    [SerializeField] protected BallSettings _ballSettings;
 
-	[SerializeField] protected BallSettings _ballSettings;
-	
-	protected SpriteRenderer _renderer;
-	protected Rigidbody2D _rb;
+    protected Rigidbody2D _rb;
+    SpriteRenderer _renderer;
 
-	protected Color _ballColor;
-	protected float _ballSpeed;
-	protected float _ballSize;
-	
-	void Awake() {
-		_rb = GetComponent<Rigidbody2D>();
-		_renderer = GetComponent<SpriteRenderer>();
-	}
+    protected float _ballSpeed;
+    Color _ballColor;
+    float _ballSize;
 
-	void OnCollisionEnter2D(Collision2D other) {
-		if (other.collider.CompareTag("Player")) {
-			if(!PhotonNetwork.connected || PhotonNetwork.isMasterClient)
-				BallBounced?.Invoke();
-		}
-	}
+    void Awake() {
+        _rb = GetComponent<Rigidbody2D>();
+        _renderer = GetComponent<SpriteRenderer>();
+    }
 
-	protected void SetupBallProperties() {
-		_rb.velocity = Vector2.zero;
+    void OnCollisionEnter2D(Collision2D other) {
+        if (other.collider.CompareTag("Player")) {
+            if (!PhotonNetwork.connected || PhotonNetwork.isMasterClient)
+                BallBounced?.Invoke();
+        }
+    }
 
-		_ballSpeed = Random.Range(_ballSettings.MinSpeed, _ballSettings.MaxSpeed);
-		_ballSize = Random.Range(_ballSettings.MinSize, _ballSettings.MaxSize);
-		_ballColor = Random.ColorHSV(_ballSettings.MinHue, _ballSettings.MaxHue, _ballSettings.MinSaturation, _ballSettings.MaxSaturation, _ballSettings.MinValue, _ballSettings.MaxValue);
+    protected void SetupBallProperties() {
+        _rb.velocity = Vector2.zero;
 
-		transform.localScale = Vector3.one * _ballSize;
-		_renderer.color = _ballColor;
-	}
+        _ballSpeed = Random.Range(_ballSettings.MinSpeed, _ballSettings.MaxSpeed);
+        _ballSize = Random.Range(_ballSettings.MinSize, _ballSettings.MaxSize);
+        _ballColor = Random.ColorHSV(_ballSettings.MinHue, _ballSettings.MaxHue, _ballSettings.MinSaturation,
+                                     _ballSettings.MaxSaturation, _ballSettings.MinValue, _ballSettings.MaxValue);
 
-	protected void HideBall() {
-		gameObject.SetActive(false);
-		BallDissapeared?.Invoke();
-	}
+        transform.localScale = Vector3.one * _ballSize;
+        _renderer.color = _ballColor;
+    }
 
+    protected void HideBall() {
+        gameObject.SetActive(false);
+        BallDissapeared?.Invoke();
+    }
 }

@@ -1,29 +1,23 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-
-using DG.Tweening;
-
+﻿using DG.Tweening;
 using UnityEngine;
 
 public class OfflineBall : Ball {
-	
-	void OnEnable() {
-		LaunchBall();
-	}
+    void OnEnable() {
+        LaunchBall();
+    }
 
-	void OnBecameInvisible() {
-		HideBall();
-	}
+    void OnBecameInvisible() {
+        HideBall();
+    }
 
-	void LaunchBall() {
-		SetupBallProperties();
+    void LaunchBall() {
+        SetupBallProperties();
 
-		var seq = DOTween.Sequence();
-		seq.Append(transform.DOShakePosition(1f, Vector3.one * 0.2f).SetEase(Ease.OutElastic));
-		seq.AppendCallback(() => {
-			                   var forceVector = new Vector2(Random.Range(-1f, 1), Random.Range(-1f, 1)).normalized;
-			                   _rb.AddForce(forceVector * _ballSpeed, ForceMode2D.Impulse);
-		                   });
-	}
-
+        var seq = DOTween.Sequence();
+        seq.Append(transform.DOShakePosition(1f, Vector3.one * 0.2f).SetEase(Ease.OutElastic));
+        seq.AppendCallback(() => {
+                               var forceVector = new Vector2(Random.Range(-1f, 1), Random.Range(-1f, 1)).normalized;
+                               _rb.AddForce(forceVector * _ballSpeed, ForceMode2D.Impulse);
+                           });
+    }
 }

@@ -1,15 +1,8 @@
-﻿using System;
-
-using UnityEngine;
-
+﻿using UnityEngine;
 using DG.Tweening;
-
-using Photon;
-
 using Random = UnityEngine.Random;
 
 public class OnlineBall : Ball {
-
     void OnEnable() {
         if (PhotonNetwork.isMasterClient)
             LaunchBall();

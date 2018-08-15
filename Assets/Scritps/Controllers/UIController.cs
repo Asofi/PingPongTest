@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections;
-
 using DG.Tweening;
-
-using TMPro;
-
 using UnityEngine;
 
 public class UIController : MonoBehaviour {
@@ -16,6 +11,7 @@ public class UIController : MonoBehaviour {
     void Awake() {
         LobbyController.SessionStarted += OnSessionStarted;
         LobbyController.PlayerDisconnected += EndGame;
+        Init();
     }
 
     void Init() {
@@ -35,24 +31,24 @@ public class UIController : MonoBehaviour {
 
     public void StartOnlineGame() {
         ShowMenu(_mainMenu, false, Ease.InBack, () => { GameStarted?.Invoke(GameModes.Online); });
-        ShowMenu(_connectingScreen, true, Ease.InBack);
+        ShowMenu(_connectingScreen, true, Ease.OutBack);
     }
 
     public void EndGame() {
         GameEnded?.Invoke();
-        ShowMenu(_mainMenu, true, Ease.InBack);
+        ShowMenu(_mainMenu, true, Ease.OutBack);
         ShowMenu(_ingameScreen, false);
     }
 
     void ShowMenu(Canvas menuPanel, bool isOpening = true, Ease ease = Ease.Flash, Action callback = null) {
-        if(isOpening)
+        if (isOpening)
             menuPanel.gameObject.SetActive(true);
-        
+
         Sequence seq = DOTween.Sequence();
         seq.Append(menuPanel.transform.DOScale(isOpening ? 1 : 0, 0.5f).SetEase(ease));
         seq.AppendCallback(() => {
-                               callback?.Invoke(); 
-                               if(!isOpening)
+                               callback?.Invoke();
+                               if (!isOpening)
                                    menuPanel.gameObject.SetActive(false);
                            });
     }

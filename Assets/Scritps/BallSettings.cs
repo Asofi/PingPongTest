@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-
-using UnityEngine;
+﻿using UnityEngine;
 
 [CreateAssetMenu(fileName = "BallSettings", menuName = "BallSettings", order = 0)]
 public class BallSettings : ScriptableObject {

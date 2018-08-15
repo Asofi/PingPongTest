@@ -1,4 +1,4 @@
-﻿public enum GameModes{
+﻿public enum GameModes {
     Offline,
     Online,
     Menu

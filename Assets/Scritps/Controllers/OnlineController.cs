@@ -1,13 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-
-using Photon;
-
+﻿using Photon;
 using UnityEngine;
 
 public class OnlineController : PunBehaviour {
-    [SerializeField]
-    PhotonView _lowerPlayer, _upperPlayer;
+    [SerializeField] PhotonView _lowerPlayer, _upperPlayer;
 
     void OnEnable() {
         DistributePlayers();

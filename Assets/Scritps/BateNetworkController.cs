@@ -1,10 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-
-using Photon;
-
-using TMPro;
-
+﻿using Photon;
 using UnityEngine;
 
 public class BateNetworkController : PunBehaviour {
@@ -52,6 +46,7 @@ public class BateNetworkController : PunBehaviour {
             transform.rotation =
                 Quaternion.Slerp(transform.rotation, _bateRotation, _networkLerpSpeed * Time.deltaTime);
         }
+
         transform.position = Vector2.Lerp(transform.position, _movingPosition, _bateSpeed * Time.deltaTime);
     }
 
