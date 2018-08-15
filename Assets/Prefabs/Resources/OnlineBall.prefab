@@ -26,7 +26,7 @@ GameObject:
   - component: {fileID: 114279763440549924}
   - component: {fileID: 114172857174749266}
   m_Layer: 0
-  m_Name: Ball
+  m_Name: OnlineBall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -194,16 +194,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bebb3aee4b68be488b27337b897ddef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _minSpeed: 5
-  _maxSpeed: 10
-  _minSize: 1
-  _maxSize: 2
-  _minHue: 0
-  _maxHue: 1
-  _minSaturation: 0.5
-  _maxSaturation: 0.5
-  _minValue: 0.8
-  _maxValue: 0.8
+  _ballSettings: {fileID: 11400000, guid: e5ff5949ce3ad5341830721be893d697, type: 2}
 --- !u!212 &212580383987833998
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -236,9 +227,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: -1494663455
+  m_SortingLayer: 1
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: de0b3d1204d17bf42b473a5e10d8e9ef, type: 3}
   m_Color: {r: 0.44705886, g: 0.34509805, b: 0.29411766, a: 1}
   m_FlipX: 0

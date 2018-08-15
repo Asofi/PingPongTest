@@ -16,7 +16,8 @@ public class GameController : PunBehaviour{
     Transform _onlinePlayer;
     
     [Header("Ball Setup")] 
-    [SerializeField] Transform _ballPrefab;
+    [SerializeField] Transform _offlineBallPrefab;
+    [SerializeField] Transform _onlineBallPrefab;
     [SerializeField] Transform _ballSpawnPoint;
     Transform _activeBall;
 
@@ -51,15 +52,19 @@ public class GameController : PunBehaviour{
     }
 
     void OnGameEnded() {
-        _gameMode = GameModes.Menu;
-        _activeBall.GetComponent<Ball>().BallDissapared -= OnBallDissapared;
+        Ball.BallDissapeared -= OnBallDissapared;
         Destroy(_activeBall.gameObject);
-        
-        if(_gameMode == GameModes.Offline)
-            Destroy(_offlinePlayer.gameObject);
-        else 
-            Destroy(_onlinePlayer.gameObject);
 
+        if (_gameMode == GameModes.Offline) {
+            if(_offlinePlayer)
+                Destroy(_offlinePlayer.gameObject);
+        }
+        else {
+            if(_onlinePlayer)
+                Destroy(_onlinePlayer.gameObject);
+        } 
+
+        _gameMode = GameModes.Menu;
         _activeBall = null;
         
         if(PhotonNetwork.connected)
@@ -77,6 +82,14 @@ public class GameController : PunBehaviour{
             return;
         
         SetupOfflineGame();
+    }
+    
+    void OnBallDissapared(){
+        if(_gameMode == GameModes.Offline)
+            SetupBall();
+        else {
+            photonView.RPC("SetupBall", PhotonTargets.All);
+        }
     }
 
     void SetupOfflineGame(){
@@ -122,13 +135,13 @@ public class GameController : PunBehaviour{
         if (_activeBall == null) {
 
             if (_gameMode == GameModes.Offline)
-                _activeBall = Instantiate(_ballPrefab, _ballSpawnPoint.position, Quaternion.identity);
+                _activeBall = Instantiate(_offlineBallPrefab, _ballSpawnPoint.position, Quaternion.identity);
             else if (PhotonNetwork.isMasterClient) {
                 _activeBall =
-                    PhotonNetwork.Instantiate(_ballPrefab.name, _ballSpawnPoint.position, Quaternion.identity, 0).transform;
+                    PhotonNetwork.Instantiate(_onlineBallPrefab.name, _ballSpawnPoint.position, Quaternion.identity, 0).transform;
                 photonView.RPC("Init", PhotonTargets.Others, _activeBall.gameObject.GetPhotonView().viewID);
             }    
-            _activeBall.GetComponent<Ball>().BallDissapared += OnBallDissapared;
+            Ball.BallDissapeared += OnBallDissapared;
         } else{
             _activeBall.position = _ballSpawnPoint.position;
             _activeBall.gameObject.SetActive(true);
@@ -138,13 +151,5 @@ public class GameController : PunBehaviour{
     [PunRPC]
     void Init(int activeBallViewId) {
         _activeBall = PhotonView.Find(activeBallViewId).transform;
-    }
-
-    void OnBallDissapared(){
-        if(_gameMode == GameModes.Offline)
-            SetupBall();
-        else {
-            photonView.RPC("SetupBall", PhotonTargets.All);
-        }
     }
 }

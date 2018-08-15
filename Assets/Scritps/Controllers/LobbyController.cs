@@ -9,16 +9,16 @@ public class LobbyController : PunBehaviour{
 	public static event Action<int> PlayerConnected;
 	public static event Action SessionStarted, PlayerDisconnected;
 	
+	[SerializeField] byte MaxPlayersPerRoom = 2;
 	const string _gameVersion = "1";
-	public byte MaxPlayersPerRoom = 2;
 
 	void Awake()
 	{
 		PhotonNetwork.autoJoinLobby = false;
 		PhotonNetwork.automaticallySyncScene = true;
-		UIController.GameStarted += OnGameStarted;
 		PhotonNetwork.sendRate = 20;
 		PhotonNetwork.sendRateOnSerialize = 20;
+		UIController.GameStarted += OnGameStarted;
 	}
 
 	void OnGameStarted(GameModes obj){
@@ -27,7 +27,7 @@ public class LobbyController : PunBehaviour{
 		Connect();
 	}
 	
-	public void Connect()
+	void Connect()
 	{
 		if (PhotonNetwork.connected)
 		{
@@ -44,12 +44,7 @@ public class LobbyController : PunBehaviour{
 		PhotonNetwork.JoinRandomRoom();
 	}
 
-	public override void OnJoinedLobby()
-	{
-		PhotonNetwork.JoinRandomRoom();
-	}
-
-	public void OnPhotonRandomJoinFailed()
+	public override void OnPhotonRandomJoinFailed(object[] codeAndMsg)
 	{
 		PhotonNetwork.CreateRoom(null, new RoomOptions() { MaxPlayers = MaxPlayersPerRoom }, null);
 	}
@@ -71,10 +66,6 @@ public class LobbyController : PunBehaviour{
 	{
 		Debug.Log("Players in room: " + PhotonNetwork.room.PlayerCount);
 		StartCoroutine(WaitingForSecondPlayer());
-	}
-
-	public override void OnLeftRoom() {
-		
 	}
 
 	void StartSession() {

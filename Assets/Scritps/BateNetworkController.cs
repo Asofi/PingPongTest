@@ -3,16 +3,20 @@ using System.Collections.Generic;
 
 using Photon;
 
+using TMPro;
+
 using UnityEngine;
 
 public class BateNetworkController : PunBehaviour {
     [SerializeField] float _bateSpeed;
+    float _networkLerpSpeed = 9;
     float _bateWidth;
     float _sideLimit;
 
     Camera _camera;
 
     Vector2 _movingPosition;
+    Quaternion _bateRotation;
 
     void Awake() {
         _camera = Camera.main;
@@ -24,9 +28,6 @@ public class BateNetworkController : PunBehaviour {
     }
 
     void Update() {
-        if (photonView.isMine)
-            GetInput();
-        
         MoveBates();
     }
 
@@ -45,14 +46,24 @@ public class BateNetworkController : PunBehaviour {
     }
 
     void MoveBates() {
+        if (photonView.isMine)
+            GetInput();
+        else {
+            transform.rotation =
+                Quaternion.Slerp(transform.rotation, _bateRotation, _networkLerpSpeed * Time.deltaTime);
+        }
         transform.position = Vector2.Lerp(transform.position, _movingPosition, _bateSpeed * Time.deltaTime);
     }
 
-    private void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info) {
+    void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info) {
         if (stream.isWriting) {
             stream.SendNext(_movingPosition);
+            stream.SendNext(transform.rotation);
         } else {
-            _movingPosition = (Vector2) stream.ReceiveNext();
+            if (!photonView.isMine) {
+                _movingPosition = (Vector2) stream.ReceiveNext();
+                _bateRotation = (Quaternion) stream.ReceiveNext();
+            }
         }
     }
 }

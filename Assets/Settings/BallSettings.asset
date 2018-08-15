@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71868f1d2aeb1fb48b1f9c7364df3c87, type: 3}
+  m_Name: BallSettings
+  m_EditorClassIdentifier: 
+  MinSpeed: 4
+  MaxSpeed: 7
+  MinSize: 1
+  MaxSize: 2
+  MinHue: 0
+  MaxHue: 1
+  MinSaturation: 0.5
+  MaxSaturation: 0.5
+  MinValue: 0.8
+  MaxValue: 0.8

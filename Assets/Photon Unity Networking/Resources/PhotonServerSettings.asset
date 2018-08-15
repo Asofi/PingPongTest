@@ -47,4 +47,7 @@ MonoBehaviour:
   - Init
   - SetPredictionSpeed
   - OnBallDissapeared
+  - HideBall
+  - HideBallRPC
+  - SetupBallPropertiesRPC
   DisableAutoOpenWizard: 1
